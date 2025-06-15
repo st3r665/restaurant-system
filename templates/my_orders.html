@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% block title %}我的订单{% endblock %}
+{% block content %}
+<section>
+    <h2>我的订单记录</h2>
+    {% if orders %}
+    <figure>
+        <table role="grid">
+            <thead>
+                <tr>
+                    <th>订单ID</th>
+                    <th>下单时间</th>
+                    <th>关联预约ID</th>
+                    <th>总金额</th>
+                    <th>状态</th>
+                    <th>详情</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.order_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ order.reservation_id if order.reservation_id else '无' }}</td>
+                    <td>¥{{ "%.2f"|format(order.total_amount) }}</td>
+                    <td><mark>{{ order.status }}</mark></td>
+                    <td><a href="{{ url_for('order_details', order_id=order.id) }}">查看详情</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </figure>
+    {% else %}
+    <p>您还没有任何订单。</p>
+    <a href="{{ url_for('menu') }}" role="button">去点餐</a>
+    {% endif %}
+</section>
+{% endblock %}

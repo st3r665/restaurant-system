@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}餐厅预约系统{% endblock %}</title>
-    <!-- Pico.css via CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .cart-count {
+            background-color: var(--pico-color-red-500);
+            color: white;
+            border-radius: 50%;
+            padding: 0.1em 0.4em;
+            font-size: 0.75em;
+            vertical-align: top;
+            margin-left: 4px;
+        }
+    </style>
 </head>
 <body>
     <nav class="container-fluid">
@@ -15,12 +25,24 @@
         </ul>
         <ul>
             <li><a href="{{ url_for('index') }}">首页预约</a></li>
+            <li><a href="{{ url_for('menu') }}">查看菜单</a></li>
             {% if session.user_id %}
                 <li><a href="{{ url_for('my_reservations') }}">我的预约</a></li>
+                <li><a href="{{ url_for('my_orders') }}">我的订单</a></li>
                 {% if session.is_admin %}
-                <li><a href="{{ url_for('admin_reservations') }}">管理预约</a></li>
-                <li><a href="{{ url_for('admin_manage_tables') }}">管理餐桌</a></li>
+                <li>
+                    <details class="dropdown">
+                        <summary>管理</summary>
+                        <ul role="list">
+                            <li><a href="{{ url_for('admin_reservations') }}">管理预约</a></li>
+                            <li><a href="{{ url_for('admin_manage_tables') }}">管理餐桌</a></li>
+                            <li><a href="{{ url_for('admin_manage_menu') }}">管理菜单</a></li>
+                            <li><a href="{{ url_for('admin_orders') }}">管理订单</a></li>
+                        </ul>
+                    </details>
+                </li>
                 {% endif %}
+                <li><a href="{{ url_for('view_cart') }}">购物车<span class="cart-count">{{ session.get('cart')|length if session.get('cart') else 0 }}</span></a></li>
                 <li><a href="{{ url_for('logout') }}" role="button" class="secondary">退出 ({{ session.username }})</a></li>
             {% else %}
                 <li><a href="{{ url_for('login') }}">登录</a></li>
@@ -28,20 +50,16 @@
             {% endif %}
         </ul>
     </nav>
-
     <main class="container">
         {% include '_flash_messages.html' %}
         {% block content %}{% endblock %}
     </main>
-
     <footer class="container">
         <small>© {{ now().year }} 餐厅预约系统. 数据库课程设计.</small>
     </footer>
-
     <script>
-        // JavaScript for dark mode toggle (optional)
         const themeSwitcher = document.createElement('button');
-        themeSwitcher.textContent = '🌙/☀️'; // Moon/Sun emoji
+        themeSwitcher.textContent = '🌙/☀️';
         themeSwitcher.setAttribute('aria-label', 'Switch theme');
         themeSwitcher.style.position = 'fixed';
         themeSwitcher.style.bottom = '1rem';
@@ -51,10 +69,9 @@
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme); // Save preference
+            localStorage.setItem('theme', newTheme);
         };
         document.body.appendChild(themeSwitcher);
-        // Apply saved theme on load
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme) {
             document.documentElement.setAttribute('data-theme', savedTheme);

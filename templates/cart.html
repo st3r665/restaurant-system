@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+
+{% block title %}我的购物车{% endblock %}
+
+{% block content %}
+<section>
+    <h2>我的购物车</h2>
+    {% if cart_items %}
+    <form action="{{ url_for('place_order') }}" method="POST">
+        <figure>
+            <table role="grid">
+                <thead>
+                    <tr>
+                        <th>菜品</th>
+                        <th>单价</th>
+                        <th>数量</th>
+                        <th>小计</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>¥{{ "%.2f"|format(item.price) }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>¥{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                        <td>
+                            <a href="{{ url_for('remove_from_cart', item_id=item.id) }}" role="button" class="contrast outline">移除</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="text-align: right;"><strong>总计:</strong></td>
+                        <td colspan="2"><strong>¥{{ "%.2f"|format(total_price) }}</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </figure>
+        <label for="reservation_id">关联到我的预约 (可选)</label>
+        <select id="reservation_id" name="reservation_id">
+            <option value="">不关联预约 (堂食或外带)</option>
+            {% for r in user_reservations %}
+            <option value="{{ r.id }}">预约 #{{ r.id }} - {{ r.reservation_date.strftime('%Y-%m-%d') }} {{ r.reservation_time.strftime('%H:%M') if r.reservation_time.strftime is defined else r.reservation_time }} (桌号: {{ r.table_number }})</option>
+            {% endfor %}
+        </select>
+        <button type="submit">提交订单</button>
+        <a href="{{ url_for('clear_cart') }}" role="button" class="secondary">清空购物车</a>
+    </form>
+    {% else %}
+    <p>你的购物车是空的。</p>
+    <a href="{{ url_for('menu') }}" role="button">去逛逛菜单</a>
+    {% endif %}
+</section>
+{% endblock %}

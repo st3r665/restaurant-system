@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block title %}管理所有订单{% endblock %}
+
+{% block content %}
+<section>
+    <h2>所有用户订单记录</h2>
+    {% if orders %}
+    <figure>
+        <table role="grid">
+            <thead>
+                <tr>
+                    <th>订单ID</th>
+                    <th>用户</th>
+                    <th>下单时间</th>
+                    <th>总金额</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.username }}</td>
+                    <td>{{ order.order_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>¥{{ "%.2f"|format(order.total_amount) }}</td>
+                    <td>
+                        <form action="{{ url_for('update_order_status', order_id=order.id) }}" method="POST">
+                            <select name="status" onchange="this.form.submit()">
+                                <option value="pending" {{ 'selected' if order.status == 'pending' }}>待处理</option>
+                                <option value="preparing" {{ 'selected' if order.status == 'preparing' }}>准备中</option>
+                                <option value="completed" {{ 'selected' if order.status == 'completed' }}>已完成</option>
+                                <option value="paid" {{ 'selected' if order.status == 'paid' }}>已支付</option>
+                                <option value="cancelled" {{ 'selected' if order.status == 'cancelled' }}>已取消</option>
+                            </select>
+                        </form>
+                    </td>
+                    <td><a href="{{ url_for('order_details', order_id=order.id, admin_view=True) }}">查看详情</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </figure>
+    {% else %}
+    <p>当前没有订单记录。</p>
+    {% endif %}
+</section>
+{% endblock %}

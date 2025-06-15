@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block title %}订单详情{% endblock %}
+
+{% block content %}
+<section>
+    <h2>订单 #{{ order.id }} 详情</h2>
+    <article>
+        <p><strong>下单时间:</strong> {{ order.order_time.strftime('%Y-%m-%d %H:%M') }}</p>
+        <p><strong>状态:</strong> {{ order.status }}</p>
+        <p><strong>总金额:</strong> ¥{{ "%.2f"|format(order.total_amount) }}</p>
+        <p><strong>关联预约:</strong> {{ '预约 #' ~ order.reservation_id if order.reservation_id else '无' }}</p>
+        <hr>
+        <h4>订单内容</h4>
+        <ul>
+            {% for item in items %}
+            <li>{{ item.name }} x {{ item.quantity }} - ¥{{ "%.2f"|format(item.price_per_item * item.quantity) }}</li>
+            {% endfor %}
+        </ul>
+    </article>
+    {% if admin_view %}
+    <a href="{{ url_for('admin_orders') }}" role="button" class="contrast">返回管理订单</a>
+    {% else %}
+    <a href="{{ url_for('my_orders') }}" role="button" class="contrast">返回我的订单</a>
+    {% endif %}
+</section>
+{% endblock %}
