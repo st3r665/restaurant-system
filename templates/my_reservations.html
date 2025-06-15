@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}我的预约{% endblock %}
+
+{% block content %}
+<section>
+    <h2>我的预约记录</h2>
+    {% if reservations %}
+    <figure>
+        <table role="grid">
+            <thead>
+                <tr>
+                    <th scope="col">餐桌号</th>
+                    <th scope="col">位置</th>
+                    <th scope="col">日期</th>
+                    <th scope="col">时间</th>
+                    <th scope="col">人数</th>
+                    <th scope="col">状态</th>
+                    <th scope="col">特殊要求</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for r in reservations %}
+                <tr>
+                    <td>{{ r.table_number }}</td>
+                    <td>{{ r.location if r.location else '-' }}</td>
+                    <td>{{ r.reservation_date_str }}</td>
+                    <td>{{ r.reservation_time_str }}</td>
+                    <td>{{ r.num_guests }}</td>
+                    <td><mark class="{{ 'success' if r.status == 'confirmed' else 'warning' if r.status == 'pending' else 'danger' }}">{{ r.status }}</mark></td>
+                    <td>{{ r.special_requests if r.special_requests else '-' }}</td>
+                    <td>
+                        {% if r.status == 'confirmed' %}
+                        <form action="{{ url_for('cancel_reservation', reservation_id=r.id) }}" method="POST" onsubmit="return confirm('确定要取消这个预约吗？');">
+                            <button type="submit" class="contrast outline">取消预约</button>
+                        </form>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </figure>
+    {% else %}
+    <p>您当前没有有效的预约记录。</p>
+    <a href="{{ url_for('index') }}" role="button">去预约</a>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+<!-- templates/_flash_messages.html -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <article class="message {{ category if category else 'info' }}">
+        <div class="message-body">
+          {{ message }}
+        </div>
+      </article>
+    {% endfor %}
+  {% endif %}
+{% endwith %}

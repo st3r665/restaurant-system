@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}管理所有预约{% endblock %}
+
+{% block content %}
+<section>
+    <h2>所有用户预约记录</h2>
+    {% if reservations %}
+    <figure>
+        <table role="grid">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">用户</th>
+                    <th scope="col">餐桌号</th>
+                    <th scope="col">日期</th>
+                    <th scope="col">时间</th>
+                    <th scope="col">人数</th>
+                    <th scope="col">状态</th>
+                    <th scope="col">特殊要求</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for r in reservations %}
+                <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.username }}</td>
+                    <td>{{ r.table_number }}</td>
+                    <td>{{ r.reservation_date_str }}</td>
+                    <td>{{ r.reservation_time_str }}</td>
+                    <td>{{ r.num_guests }}</td>
+                    <td><mark class="{{ 'success' if r.status == 'confirmed' else 'warning' if r.status == 'pending' else 'danger' }}">{{ r.status }}</mark></td>
+                    <td>{{ r.special_requests if r.special_requests else '-' }}</td>
+                    <td>
+                        {% if r.status == 'confirmed' or r.status == 'pending' %}
+                        <form action="{{ url_for('cancel_reservation', reservation_id=r.id) }}" method="POST" onsubmit="return confirm('管理员操作：确定要取消这个预约吗？');">
+                            <button type="submit" class="contrast outline">取消</button>
+                        </form>
+                        {% else %}
+                        -
+                        {% endif %}
+                        <!-- 可以添加编辑、确认等操作 -->
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </figure>
+    {% else %}
+    <p>当前没有预约记录。</p>
+    {% endif %}
+</section>
+{% endblock %}

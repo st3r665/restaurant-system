@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+{% block title %}管理餐桌{% endblock %}
+
+{% block content %}
+<section>
+    <h2>管理餐桌</h2>
+    
+    <article>
+        <h3>添加新餐桌</h3>
+        <form action="{{ url_for('admin_manage_tables') }}" method="POST">
+            <input type="hidden" name="action" value="add">
+            <div class="grid">
+                <label for="table_number">
+                    餐桌号
+                    <input type="text" id="table_number" name="table_number" required>
+                </label>
+                <label for="capacity">
+                    容量
+                    <input type="number" id="capacity" name="capacity" min="1" required>
+                </label>
+            </div>
+            <label for="location">
+                位置 (可选)
+                <input type="text" id="location" name="location">
+            </label>
+            <button type="submit">添加餐桌</button>
+        </form>
+    </article>
+
+    <h3>现有餐桌列表</h3>
+    {% if tables %}
+    <figure>
+        <table role="grid">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">餐桌号</th>
+                    <th scope="col">容量</th>
+                    <th scope="col">位置</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for table in tables %}
+                <tr>
+                    <td>{{ table.id }}</td>
+                    <td>{{ table.table_number }}</td>
+                    <td>{{ table.capacity }}</td>
+                    <td>{{ table.location if table.location else '-' }}</td>
+                    <td>
+                        <form action="{{ url_for('admin_manage_tables') }}" method="POST" onsubmit="return confirm('确定要删除这个餐桌吗？这可能会影响现有预约。');">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="table_id" value="{{ table.id }}">
+                            <button type="submit" class="contrast outline">删除</button>
+                        </form>
+                        <!-- 可以添加编辑操作 -->
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </figure>
+    {% else %}
+    <p>系统中还没有餐桌。</p>
+    {% endif %}
+</section>
+{% endblock %}

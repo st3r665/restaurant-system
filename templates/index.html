@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+
+{% block title %}欢迎 - 餐厅预约{% endblock %}
+
+{% block content %}
+<section>
+    <hgroup>
+        <h1>欢迎来到我们的餐厅！</h1>
+        <p>请选择您的用餐信息进行预约。</p>
+    </hgroup>
+
+    {% if session.user_id %}
+    <form action="{{ url_for('make_reservation') }}" method="POST">
+        <div class="grid">
+            <label for="reservation_date">
+                选择日期
+                <input type="date" id="reservation_date" name="reservation_date" required
+                       min="{{ min_date }}" max="{{ max_date }}">
+            </label>
+            <label for="reservation_time">
+                选择时间
+                <select id="reservation_time" name="reservation_time" required>
+                    <option value="" disabled selected>选择时间</option>
+                    {% for slot in time_slots %}
+                    <option value="{{ slot }}">{{ slot }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <div class="grid">
+            <label for="num_guests">
+                用餐人数
+                <input type="number" id="num_guests" name="num_guests" min="1" max="10" value="2" required>
+            </label>
+            <label for="table_id">
+                选择餐桌 (桌号 - 容量 - 位置)
+                <select id="table_id" name="table_id" required>
+                    <option value="" disabled selected>选择餐桌</option>
+                    {% for table in tables %}
+                    <option value="{{ table.id }}">
+                        {{ table.table_number }} - {{ table.capacity }}人 {% if table.location %}- {{ table.location }}{% endif %}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        
+        <label for="special_requests">特殊要求 (可选)</label>
+        <textarea id="special_requests" name="special_requests" rows="3"></textarea>
+
+        <button type="submit">立即预约</button>
+    </form>
+    {% else %}
+    <article>
+        <p>请 <a href="{{ url_for('login') }}">登录</a> 或 <a href="{{ url_for('register') }}">注册</a> 后进行预约。</p>
+    </article>
+    {% endif %}
+</section>
+
+<section>
+    <h2>我们的餐桌</h2>
+    <div class="grid">
+        {% for table in tables %}
+        <article>
+            <hgroup>
+                <h4>{{ table.table_number }}</h4>
+                <p>容量: {{ table.capacity }}人</p>
+            </hgroup>
+            {% if table.location %}<p>位置: {{ table.location }}</p>{% endif %}
+            <em>(您可以在上方表单选择此桌进行预约)</em>
+        </article>
+        {% else %}
+        <p>暂无餐桌信息。</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
