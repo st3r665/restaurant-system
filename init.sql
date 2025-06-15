@@ -7,7 +7,6 @@ DROP TABLE IF EXISTS menu_categories;
 DROP TABLE IF EXISTS tables;
 DROP TABLE IF EXISTS users;
 
--- 用户表
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -18,7 +17,6 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 餐桌表
 CREATE TABLE tables (
     id INT AUTO_INCREMENT PRIMARY KEY,
     table_number VARCHAR(10) UNIQUE NOT NULL,
@@ -26,7 +24,6 @@ CREATE TABLE tables (
     location VARCHAR(100) -- e.g., 'Window side', 'Near kitchen'
 );
 
--- 预约表
 CREATE TABLE reservations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -41,14 +38,12 @@ CREATE TABLE reservations (
     FOREIGN KEY (table_id) REFERENCES tables(id) ON DELETE CASCADE
 );
 
--- 新增：菜单分类表
 CREATE TABLE menu_categories (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL,
     description TEXT
 );
 
--- 新增：菜单项/菜品表
 CREATE TABLE menu_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category_id INT NOT NULL,
@@ -60,7 +55,6 @@ CREATE TABLE menu_items (
     FOREIGN KEY (category_id) REFERENCES menu_categories(id) ON DELETE CASCADE
 );
 
--- 新增：订单表
 CREATE TABLE orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -72,7 +66,6 @@ CREATE TABLE orders (
     FOREIGN KEY (reservation_id) REFERENCES reservations(id) ON DELETE SET NULL
 );
 
--- 新增：订单详情表 (连接订单和菜品)
 CREATE TABLE order_items (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
@@ -84,7 +77,6 @@ CREATE TABLE order_items (
 );
 
 
--- 插入示例数据
 INSERT INTO users (username, password_hash, email, is_admin) VALUES
 ('admin', 'pbkdf2:sha256:600000$QyigkYDn9N2aG8vL$c7a95047893a02a0a20a325d3e4141d2f78316c87e838634e0691e469446d4a8', 'admin@example.com', TRUE), -- 密码是 'adminpass'
 ('testuser', 'pbkdf2:sha256:600000$sKlpQ0zJ1F2gH9iY$099f7e1dd1a7b98868a3030a89704c324a45b96a7a37a4329e9b4b8f8e9a1c2d', 'user@example.com', FALSE); -- 密码是 'userpass'
